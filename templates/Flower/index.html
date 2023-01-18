@@ -73,14 +73,19 @@
 		</div>
 	</section>
 	<section id="consultation">
+		{% if form.errors%}
+		<div class='form_error' style='text-align:center;'>
+			<p style='backgound-color:red;'>Номер телефона введён некоретно.</p>
+		</div>
+		{% endif %}
 		<div class="container">
 			<div class="consultation">
 				<div class="title consultation__title">Оставьте заявку на консультацию</div>
-				<form action="#" class="consultation__form">
+				<form class="consultation__form" method='post'>
 					{% csrf_token %}
 					{{form.name}}
-					{{form.number}}
-					<button type="submit" class="consultation__form_btn">Отправить</button>
+					{{form.phonenumber}}
+					<a href="{% url 'Flower:index' %}#consultation"><button type="submit" class="consultation__form_btn">Отправить</button></a>
 				</form>
 			</div>
 		</div>

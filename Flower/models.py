@@ -148,12 +148,11 @@ class Request(models.Model):
     status = models.CharField(
         max_length=50,
         choices=STATUS,
+        default='Raw',
         verbose_name='Статус консультации',
-
     )
     source = models.CharField(
         max_length=30,
         choices=SOURCE,
         default='Site'
     )
-

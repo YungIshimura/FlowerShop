@@ -1,9 +1,20 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
+from .forms import RequestToConsultation
 
 
 def view_index(request):
+    context = {}
+    if request.method == 'POST':
+        form = RequestToConsultation(request.POST)
+        print(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect(request.path)
+    else:
+        form = RequestToConsultation()
+    context['form'] = form
 
-    return render(request, 'Flower/index.html')
+    return render(request, 'Flower/index.html', context)
 
 
 def view_catalog(request):
