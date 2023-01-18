@@ -41,7 +41,13 @@ class Bouquet(models.Model):
         max_length=255,
         verbose_name='Название букета'
     )
-    description = models.TextField()
+    image = models.ImageField(
+        null=True,
+        verbose_name='Изображение букета'
+    )
+    description = models.TextField(
+        verbose_name='Описание букета'
+    )
     event = models.CharField(
         max_length=20,
         verbose_name='Событие'
