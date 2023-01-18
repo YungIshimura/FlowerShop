@@ -94,7 +94,7 @@
 					{% csrf_token %}
 					{{form.name}}
 					{{form.phonenumber}}
-					<a href="{% url 'Flower:index'%}#consultation" style='z-index:5;'><button type="submit" class="consultation__form_btn">Отправить</button></a>
+					<a href="{% url 'Flower:index'%}#consultation" style='z-index:5; position: relative;'><button type="submit" class="consultation__form_btn">Отправить</button></a>
 				</form>
 			</div>
 		</div>
