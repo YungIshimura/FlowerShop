@@ -42,7 +42,6 @@ class Bouquet(models.Model):
         verbose_name='Название букета'
     )
     image = models.ImageField(
-        null=True,
         verbose_name='Изображение букета'
     )
     description = models.TextField(
@@ -54,13 +53,20 @@ class Bouquet(models.Model):
     )
     price = models.IntegerField(
         validators=[MinValueValidator(0)],
+        default=0,
         verbose_name='Цена',
-        default=0
     )
     is_recommended = models.BooleanField(
-        blank=True,
-        null=True,
+        default=False,
         verbose_name='Рекомендован'
+    )
+    height = models.CharField(
+        max_length=120,
+        verbose_name='Высота букета'
+    )
+    width = models.CharField(
+        max_length=100,
+        verbose_name='Ширина букета'
     )
 
     def __str__(self):
@@ -130,7 +136,13 @@ class Order(models.Model):
         validators=[MinValueValidator(0)],
         verbose_name='Стоимость'
     )
-    phonenumber = PhoneNumberField()
+    phonenumber = PhoneNumberField(
+        verbose_name='Номер телефона'
+    )
+    address = models.CharField(
+        max_length=100,
+        verbose_name='Адрес доставки',
+    )
 
     def __str__(self):
         return f'{self.bouquet} -- {self.phonenumber}'
@@ -170,5 +182,6 @@ class Request(models.Model):
     source = models.CharField(
         max_length=30,
         choices=SOURCE,
-        default='Site'
+        default='Site',
+        verbose_name='Откуда пришла заявка'
     )
