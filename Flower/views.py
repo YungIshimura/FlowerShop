@@ -1,10 +1,14 @@
 from django.shortcuts import render, redirect
 from .forms import RequestToConsultation
 from django.contrib import messages
+from .models import Bouquet
 
 
 def view_index(request):
-    context = {}
+    recommended_bouquets = Bouquet.objects.filter(is_recommended=True)
+    context = {
+        'recommended_bouquets': recommended_bouquets,
+    }
     if request.method == 'POST':
         form = RequestToConsultation(request.POST)
         if form.is_valid():
@@ -22,8 +26,11 @@ def view_index(request):
 
 
 def view_catalog(request):
-
-    return render(request, 'Flower/catalog.html')
+    bouquets = Bouquet.objects.all()
+    context = {
+        'bouquets': bouquets[:3],
+    }
+    return render(request, 'Flower/catalog.html', context=context)
 
 
 def view_order(request):
