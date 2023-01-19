@@ -285,6 +285,7 @@ color: #FFFFFF;
 	border: 1px solid #FFFFFF;
 	border-radius: 40px;
 	cursor: pointer;
+	position: relative;
 }
 
 #footer {

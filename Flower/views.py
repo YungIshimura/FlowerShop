@@ -1,9 +1,24 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
+from .forms import RequestToConsultation
+from django.contrib import messages
 
 
 def view_index(request):
+    context = {}
+    if request.method == 'POST':
+        form = RequestToConsultation(request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(
+                request, 'Спасибо за обращение. Наши операторы перезвонят вам в близжайшее время'
+            )
+            return redirect(request.path)
+    else:
+        form = RequestToConsultation()
 
-    return render(request, 'Flower/index.html')
+    context['form'] = form
+
+    return render(request, 'Flower/index.html', context)
 
 
 def view_catalog(request):
