@@ -57,8 +57,8 @@ class Bouquet(models.Model):
         return self.name
 
     class Meta:
-        verbose_name = 'Цветок'
-        verbose_name_plural = 'Цветы'
+        verbose_name = 'Букет'
+        verbose_name_plural = 'Букеты'
 
 
 class Bouquet_Flower(models.Model):
