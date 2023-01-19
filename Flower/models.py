@@ -57,6 +57,11 @@ class Bouquet(models.Model):
         verbose_name='Цена',
         default=0
     )
+    is_recommended = models.BooleanField(
+        blank=True,
+        null=True,
+        verbose_name='Рекомендован'
+    )
 
     def __str__(self):
         return self.name
