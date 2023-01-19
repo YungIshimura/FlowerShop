@@ -1,7 +1,9 @@
 from django.shortcuts import render, redirect
-from .forms import RequestToConsultation
+from django.urls import reverse
+from .forms import RequestToConsultationForm, OrderForm
 from django.contrib import messages
-from .models import Bouquet
+from .models import Bouquet, Bouquet_Flower, Order
+from django.shortcuts import render, HttpResponseRedirect
 
 
 def view_index(request):
@@ -10,7 +12,7 @@ def view_index(request):
         'recommended_bouquets': recommended_bouquets,
     }
     if request.method == 'POST':
-        form = RequestToConsultation(request.POST)
+        form = RequestToConsultationForm(request.POST)
         if form.is_valid():
             form.save()
             messages.success(
@@ -18,7 +20,7 @@ def view_index(request):
             )
             return redirect(request.path)
     else:
-        form = RequestToConsultation()
+        form = RequestToConsultationForm()
 
     context['form'] = form
 
@@ -31,16 +33,6 @@ def view_catalog(request):
         'bouquets': bouquets[:3],
     }
     return render(request, 'Flower/catalog.html', context=context)
-
-
-def view_order(request):
-
-    return render(request, 'Flower/order.html')
-
-
-def view_order_step(request):
-
-    return render(request, 'Flower/order-step.html')
 
 
 def view_quiz(request):
@@ -56,3 +48,49 @@ def view_quiz_step(request):
 def view_result(request):
 
     return render(request, 'Flower/result.html')
+
+
+def view_card(request, bouquet_id):
+    bouquet = Bouquet.objects.get(id=bouquet_id)
+    bouquet_flowers = Bouquet_Flower.objects.filter(bouquet=bouquet)
+    context = {
+        'bouquet': bouquet,
+        'bouquet_flowers': bouquet_flowers
+    }
+    response = render(request, 'Flower/card.html', context=context)
+    response.set_cookie(key='bouquet_id', value=bouquet_id, max_age=None, expires = None)
+
+    return response
+
+
+def view_order(request):
+    delivery_times = Order.TIME_OF_DELIVERY
+    context = {
+        'delivery_times': [delivery_time[1] for delivery_time in delivery_times]
+    }
+    if request.method == 'POST':
+        form = OrderForm(request.POST)
+        if form.is_valid():
+            bouquet_id = request.COOKIES.get('bouquet_id')
+            bouquet = Bouquet.objects.get(id=bouquet_id)
+            Order.objects.create(
+                customer_name = request.POST['customer_name'],
+                phonenumber = request.POST['phonenumber'],
+                address = request.POST['address'],
+                time = request.POST['time'],
+                cost = bouquet.price,
+                bouquet = bouquet                  
+            )
+            
+            return HttpResponseRedirect(reverse('Flower:order-step'))
+    else:
+        form = OrderForm()
+
+    context['form'] = form
+
+    return render(request, 'Flower/order.html', context=context)
+
+
+def view_order_step(request):
+
+    return render(request, 'Flower/order-step.html')
