@@ -2,6 +2,10 @@ from django.contrib import admin
 from .models import Shop, Flower, Bouquet_Flower, Bouquet, Request, Order
 
 
+class BouquetFlowerInline(admin.TabularInline):
+    model = Bouquet_Flower
+
+
 @admin.register(Shop)
 class ShopAdmin(admin.ModelAdmin):
     pass
@@ -19,7 +23,9 @@ class BouquetFlowerAdmin(admin.ModelAdmin):
 
 @admin.register(Bouquet)
 class BouquetAdmin(admin.ModelAdmin):
-    pass
+    inlines = [
+        BouquetFlowerInline
+    ]
 
 
 @admin.register(Request)

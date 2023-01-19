@@ -52,6 +52,11 @@ class Bouquet(models.Model):
         max_length=20,
         verbose_name='Событие'
     )
+    price = models.IntegerField(
+        validators=[MinValueValidator(0)],
+        verbose_name='Цена',
+        default=0
+    )
 
     def __str__(self):
         return self.name
