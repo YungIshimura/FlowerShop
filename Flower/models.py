@@ -73,6 +73,15 @@ class Bouquet(models.Model):
     def __str__(self):
         return self.name
 
+    def get_flowers(self):
+        return [
+            {
+                'title': item.flower.name,
+                'quantity': item.quantity
+            }
+            for item in self.bouquet_flower.all()
+        ]
+
     class Meta:
         verbose_name = 'Букет'
         verbose_name_plural = 'Букеты'
@@ -189,3 +198,6 @@ class Request(models.Model):
 
 class Occasion(models.Model):
     title = models.CharField('Повод', max_length=50)
+
+    def __str__(self):
+        return self.title

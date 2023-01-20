@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Shop, Flower, Bouquet_Flower, Bouquet, Request, Order
+from .models import Shop, Flower, Bouquet_Flower, Bouquet, Request, Order, Occasion
 
 
 class BouquetFlowerInline(admin.TabularInline):
@@ -26,6 +26,7 @@ class BouquetAdmin(admin.ModelAdmin):
     inlines = [
         BouquetFlowerInline
     ]
+    filter_horizontal = ('occasions', )
 
 
 @admin.register(Request)
@@ -35,4 +36,8 @@ class RequestAdmin(admin.ModelAdmin):
 
 @admin.register(Order)
 class OrderAdmin(admin.ModelAdmin):
+    pass
+
+@admin.register(Occasion)
+class OccasionAdmin(admin.ModelAdmin):
     pass

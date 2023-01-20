@@ -389,7 +389,8 @@ margin-bottom: 30px;
 	font-size: 14px;
 	line-height: 145.02%;
 	color: #000000;
-	margin-right: 52px;
+	margin-right: 5px;
+	width: 80px;
 }
 .card_items_intro {
 	display: block;

@@ -12,9 +12,11 @@
 				<div class="quiz__block">
 					<h1 class="quiz__title">К какому событию нужен букет?</h1>
 					<div class="quiz__elems fic">
-						<a href='{% url "Flower:quiz-step" %}'><button class="quiz__elem">Свадьба</button></a>
-						<a href='{% url "Flower:quiz-step" %}'><button class="quiz__elem">День рождения</button></a>
-							<a href='{% url "Flower:quiz-step" %}'><button class="quiz__elem">Без повода</button></a>
+						<form action="{% url 'Flower:quiz-step' %}" method="get">
+							{% for occasion in occasions %}
+								<input type="submit" class="quiz__elem" name="occasion" value="{{ occasion.title }}">
+							{% endfor %}
+						</form>
 					</div>
 					<div class="quiz__progress">
 						<div class="quiz__progress_step">
