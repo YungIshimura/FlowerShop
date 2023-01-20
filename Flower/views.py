@@ -29,11 +29,12 @@ def view_index(request):
 
     return render(request, 'Flower/index.html', context)
 
-
+from more_itertools import chunked
 def view_catalog(request):
-    bouquets = Bouquet.objects.all()
+    bouquets = list(chunked(Bouquet.objects.all(), 3))
     context = {
-        'bouquets': bouquets[:3],
+        'recommended_bouquets': bouquets[0],
+        'bouquets': bouquets[1:],
     }
     return render(request, 'Flower/catalog.html', context=context)
 
