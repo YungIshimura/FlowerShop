@@ -4,7 +4,10 @@ from .forms import RequestToConsultationForm, OrderForm
 from django.contrib import messages
 from .models import Bouquet, Bouquet_Flower, Order
 from django.shortcuts import render, HttpResponseRedirect
-
+from yookassa import Configuration, Payment
+import uuid
+import json
+from environs import Env
 
 def view_index(request):
     recommended_bouquets = Bouquet.objects.filter(is_recommended=True)
@@ -73,7 +76,7 @@ def view_order(request):
         if form.is_valid():
             bouquet_id = request.COOKIES.get('bouquet_id')
             bouquet = Bouquet.objects.get(id=bouquet_id)
-            Order.objects.create(
+            order=Order.objects.create(
                 customer_name = request.POST['customer_name'],
                 phonenumber = request.POST['phonenumber'],
                 address = request.POST['address'],
@@ -82,7 +85,7 @@ def view_order(request):
                 bouquet = bouquet                  
             )
             
-            return HttpResponseRedirect(reverse('Flower:order-step'))
+            return HttpResponseRedirect(reverse('Flower:order-step', args=[order.id]))
     else:
         form = OrderForm()
 
@@ -91,6 +94,30 @@ def view_order(request):
     return render(request, 'Flower/order.html', context=context)
 
 
-def view_order_step(request):
+def view_order_step(request, order_id):
+    env = Env()
+    env.read_env()
 
-    return render(request, 'Flower/order-step.html')
+    yookassa_account_id = env('YOOKASSA_ACCOUNT_ID')
+    yookassa_secret_key = env('YOOKASSA_SECRET_KEY')
+    Configuration.account_id = yookassa_account_id
+    Configuration.secret_key = yookassa_secret_key
+
+    order = Order.objects.get(id=order_id)
+
+    payment = Payment.create({
+        "amount": {
+            "value": f'{order.cost}',
+            "currency": "RUB"
+        },
+        "confirmation": {
+            "type": "redirect",
+            "return_url": 'http://127.0.0.1:8000/'
+        },
+        "capture": True,
+        "description": "Заказ №1"
+    }, uuid.uuid4())
+
+    url = json.loads(payment.json())['confirmation']['confirmation_url']
+        
+    return redirect(url)
