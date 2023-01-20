@@ -47,9 +47,10 @@ class Bouquet(models.Model):
     description = models.TextField(
         verbose_name='Описание букета'
     )
-    event = models.CharField(
-        max_length=20,
-        verbose_name='Событие'
+    occasions = models.ManyToManyField(
+        'Occasion',
+        verbose_name='Для каких поводов',
+        related_name='bouquets'
     )
     price = models.IntegerField(
         validators=[MinValueValidator(0)],
@@ -185,3 +186,6 @@ class Request(models.Model):
         default='Site',
         verbose_name='Откуда пришла заявка'
     )
+
+class Occasion(models.Model):
+    title = models.CharField('Повод', max_length=50)
