@@ -1,15 +1,16 @@
-from more_itertools import chunked
-from django.shortcuts import render, redirect
-from django.urls import reverse
-from .forms import RequestToConsultationForm, OrderForm
-from django.contrib import messages
-from .models import Bouquet, Bouquet_Flower, Order, Occasion, Shop
-from django.shortcuts import render, HttpResponseRedirect
-from yookassa import Configuration, Payment
-import uuid
 import json
-from environs import Env
+import uuid
 from random import choice
+
+from django.contrib import messages
+from django.shortcuts import HttpResponseRedirect, redirect, render
+from django.urls import reverse
+from environs import Env
+from more_itertools import chunked
+from yookassa import Configuration, Payment
+
+from .forms import OrderForm, RequestToConsultationForm
+from .models import Bouquet, Bouquet_Flower, Occasion, Order, Shop
 
 
 def processing_consultation_form(req):
@@ -55,12 +56,11 @@ def view_quiz(request):
     context = {
         'occasions': Occasion.objects.all()
     }
+
     return render(request, 'Flower/quiz.html', context=context)
 
 
 def view_quiz_step(request):
-    print('GET: ', request.GET)
-    print('POST: ', request.POST)
     request.session['occasion'] = request.GET.get('occasion')
     prices = set(
         f'{(bouquet.price // 1000) * 1000} - {(bouquet.price // 1000 + 1) * 1000} руб.'
@@ -70,7 +70,7 @@ def view_quiz_step(request):
     context = {
         'intervals': sorted(prices)
     }
-    print(context)
+
     return render(request, 'Flower/quiz-step.html', context=context)
 
 

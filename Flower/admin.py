@@ -1,5 +1,7 @@
 from django.contrib import admin
-from .models import Shop, Flower, Bouquet_Flower, Bouquet, Request, Order, Occasion
+
+from .models import (Bouquet, Bouquet_Flower, Flower, Occasion, Order, Request,
+                     Shop)
 
 
 class BouquetFlowerInline(admin.TabularInline):

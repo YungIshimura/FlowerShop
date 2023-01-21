@@ -1,5 +1,6 @@
 from django import forms
-from .models import Request, Order
+
+from .models import Order, Request
 
 
 class RequestToConsultationForm(forms.ModelForm):

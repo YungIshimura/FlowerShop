@@ -1,5 +1,7 @@
 from django.urls import path
-from .views import view_index, view_catalog, view_order, view_order_step, view_quiz, view_quiz_step, view_result, view_card
+
+from .views import (view_card, view_catalog, view_index, view_order,
+                    view_order_step, view_quiz, view_quiz_step, view_result)
 
 app_name = 'Flower'
 
