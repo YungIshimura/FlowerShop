@@ -36,6 +36,50 @@ class Flower(models.Model):
         verbose_name_plural = 'Цветы'
 
 
+class Decoration(models.Model):
+    COLORS = (
+        ('white', 'белый'),
+        ('black', 'черный'),
+        ('yellow', 'желтый'),
+        ('red', 'красный'),
+        ('blue', 'синий'),
+        ('green', 'зеленый'),
+        ('orange', 'оранжевый'),
+        ('sky_blue', 'небесный'),
+        ('purple', 'фиолетовый'),
+    )
+    title = models.CharField('Название', max_length=100)
+    description = models.CharField('Описание', max_length=200)
+    color = models.CharField('Основной цвет', max_length=100, choices=COLORS, blank=True)
+    price = models.SmallIntegerField(
+        'Стоимость',
+        validators=[MinValueValidator(0)],
+        blank=True
+    )
+    image = models.ImageField(
+        verbose_name='Изображение',
+        blank=True
+    )
+
+class BouquetDecoration(models.Model):
+    decoration = models.ForeignKey(
+        'Decoration',
+        related_name='bouquet_decorations',
+        on_delete=models.CASCADE,
+        verbose_name='Декорация',
+    )
+    bouquet = models.ForeignKey(
+        'Bouquet',
+        related_name='bouquet_decorations',
+        on_delete=models.CASCADE,
+        verbose_name='Букет',
+    )
+    quantity = models.IntegerField(
+        validators=[MinValueValidator(0)],
+        verbose_name='Количество'
+    )
+
+
 class Bouquet(models.Model):
     name = models.CharField(
         max_length=255,
@@ -47,6 +91,7 @@ class Bouquet(models.Model):
     description = models.TextField(
         verbose_name='Описание букета'
     )
+    
     occasions = models.ManyToManyField(
         'Occasion',
         verbose_name='Для каких поводов',
@@ -91,7 +136,7 @@ class Bouquet_Flower(models.Model):
     flower = models.ForeignKey(
         Flower,
         related_name='bouquet_flower',
-        on_delete=models.CASCADE,
+        on_delete=models.PROTECT,
         verbose_name='Цветок в букете',
     )
     bouquet = models.ForeignKey(
@@ -126,7 +171,7 @@ class Order(models.Model):
     bouquet = models.ForeignKey(
         Bouquet,
         related_name='order',
-        on_delete=models.CASCADE,
+        on_delete=models.PROTECT,
         verbose_name='Букет',
     )
     time = models.CharField(
