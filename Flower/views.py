@@ -64,8 +64,6 @@ def view_quiz_step(request):
 
 
 def view_result(request):
-    print('GET: ', request.GET)
-    print('POST: ', request.POST)
     bouquets = Occasion.objects.get(title=request.session.get('occasion')).bouquets.all()
     
     if request.GET['price'] != 'Не имеет значения':
@@ -83,7 +81,7 @@ def view_result(request):
             bouquet for bouquet
             in bouquets
             if min_price < bouquet.price
-        ] or choice(bouquets)
+        ] or bouquets
     
     context = {
         'bouquets': [
@@ -114,7 +112,7 @@ def view_card(request, bouquet_id):
     return response
 
 
-def view_order(request):
+def view_order(request, bouquet_id):
     delivery_times = Order.TIME_OF_DELIVERY
     context = {
         'delivery_times': [delivery_time[1] for delivery_time in delivery_times]
@@ -122,7 +120,7 @@ def view_order(request):
     if request.method == 'POST':
         form = OrderForm(request.POST)
         if form.is_valid():
-            bouquet_id = request.COOKIES.get('bouquet_id')
+            bouquet_id = bouquet_id or request.COOKIES.get('bouquet_id')
             bouquet = Bouquet.objects.get(id=bouquet_id)
             order=Order.objects.create(
                 customer_name = request.POST['customer_name'],
@@ -132,7 +130,6 @@ def view_order(request):
                 cost = bouquet.price,
                 bouquet = bouquet                  
             )
-            
             return HttpResponseRedirect(reverse('Flower:order-step', args=[order.id]))
     else:
         form = OrderForm()
