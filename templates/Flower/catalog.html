@@ -38,18 +38,34 @@
 			</div>
 		</div>
 	</section>
+	{% block consultation %}
 	<section id="consultation">
+		{% if form.errors%}
+		<div class='form_message' style='text-align:center; margin:10px;'>
+			<p style='backgound-color:red;'>Номер телефона введён некоретно.</p>
+		</div>
+		{% endif %}
+
+		{% if messages %}
+		<div class="form_message" style='text-align:center; margin:10px;'>
+			{% for message in messages %}
+				<p> {{ message }} </p>
+			{% endfor %}
+		</div>
+		{% endif %}
 		<div class="container">
 			<div class="consultation">
 				<div class="title consultation__title">Оставьте заявку на консультацию</div>
-				<form action="#" class="consultation__form">
-					<input type="text" name="fname" class="consultation__form_input" placeholder="Введите Имя" required>
-					<input type="text" name="tel" class="consultation__form_input" placeholder="+ 7 (999) 000 00 00" required>
-					<button type="submit" class="consultation__form_btn">Отправить</button>
+				<form class="consultation__form" method='post'>
+					{% csrf_token %}
+					{{form.name}}
+					{{form.phonenumber}}
+					<a href='#consultation'><button type="submit" class="consultation__form_btn">Отправить</button></a>
 				</form>
 			</div>
 		</div>
 	</section>
+	{% endblock %}
 	<script src="{% static 'Flower/js/main.js' %}"></script>
 </body>
 {% endblock %}

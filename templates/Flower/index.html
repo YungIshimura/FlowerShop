@@ -62,6 +62,7 @@
 			</div>
 		</div>
 	</section>
+	{% block consultation %}
 	<section id="consultation">
 		{% if form.errors%}
 		<div class='form_message' style='text-align:center; margin:10px;'>
@@ -76,7 +77,6 @@
 			{% endfor %}
 		</div>
 		{% endif %}
-
 		<div class="container">
 			<div class="consultation">
 				<div class="title consultation__title">Оставьте заявку на консультацию</div>
@@ -84,10 +84,11 @@
 					{% csrf_token %}
 					{{form.name}}
 					{{form.phonenumber}}
-					<a href="{% url 'Flower:index'%}#consultation" style='z-index:5; position: relative;'><button type="submit" class="consultation__form_btn">Отправить</button></a>
+					<a href='#consultation'><button type="submit" class="consultation__form_btn">Отправить</button></a>
 				</form>
 			</div>
 		</div>
 	</section>
+	{% endblock %}
 	{% endblock %}
 </body>

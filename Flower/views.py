@@ -1,3 +1,4 @@
+from more_itertools import chunked
 from django.shortcuts import render, redirect
 from django.urls import reverse
 from .forms import RequestToConsultationForm, OrderForm
@@ -10,33 +11,43 @@ import json
 from environs import Env
 from random import choice
 
+
+def processing_consultation_form(req):
+    if req.method == 'POST':
+        form = RequestToConsultationForm(req.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(
+                req, 'Спасибо за обращение. Наши операторы перезвонят вам в близжайшее время'
+            )
+    else:
+        form = RequestToConsultationForm()
+
+    return form
+
+
 def view_index(request):
     recommended_bouquets = Bouquet.objects.filter(is_recommended=True)
     context = {
         'recommended_bouquets': recommended_bouquets,
     }
-    if request.method == 'POST':
-        form = RequestToConsultationForm(request.POST)
-        if form.is_valid():
-            form.save()
-            messages.success(
-                request, 'Спасибо за обращение. Наши операторы перезвонят вам в близжайшее время'
-            )
-            return redirect(request.path)
-    else:
-        form = RequestToConsultationForm()
 
+    form = processing_consultation_form(request)
     context['form'] = form
 
     return render(request, 'Flower/index.html', context)
 
-from more_itertools import chunked
+
 def view_catalog(request):
     bouquets = list(chunked(Bouquet.objects.all(), 3))
     context = {
         'recommended_bouquets': bouquets[0],
         'bouquets': bouquets[1:],
     }
+
+    form = processing_consultation_form(request)
+    context['form'] = form
+
     return render(request, 'Flower/catalog.html', context=context)
 
 
@@ -64,10 +75,12 @@ def view_quiz_step(request):
 
 
 def view_result(request):
-    bouquets = Occasion.objects.get(title=request.session.get('occasion')).bouquets.all()
-    
+    bouquets = Occasion.objects.get(
+        title=request.session.get('occasion')).bouquets.all()
+
     if request.GET['price'] != 'Не имеет значения':
-        min_price, max_price = ''.join(request.GET['price'].split(' руб.')).split(' - ')
+        min_price, max_price = ''.join(
+            request.GET['price'].split(' руб.')).split(' - ')
         min_price, max_price = int(min_price), int(max_price)
         bouquets = [
             bouquet for bouquet
@@ -89,18 +102,28 @@ def view_result(request):
         ],
         'shops': shops
     }
+
+    form = processing_consultation_form(request)
+    context['form'] = form
+
     return render(request, 'Flower/result.html', context=context)
 
 
 def view_card(request, bouquet_id):
     bouquet = Bouquet.objects.get(id=bouquet_id)
     bouquet_flowers = Bouquet_Flower.objects.filter(bouquet=bouquet)
+
     context = {
         'bouquet': bouquet,
         'bouquet_flowers': bouquet_flowers
     }
+
+    form = processing_consultation_form(request)
+    context['form'] = form
+
     response = render(request, 'Flower/card.html', context=context)
-    response.set_cookie(key='bouquet_id', value=bouquet_id, max_age=None, expires = None)
+    response.set_cookie(key='bouquet_id', value=bouquet_id,
+                        max_age=None, expires=None)
 
     return response
 
@@ -115,13 +138,13 @@ def view_order(request, bouquet_id):
         if form.is_valid():
             bouquet_id = bouquet_id or request.COOKIES.get('bouquet_id')
             bouquet = Bouquet.objects.get(id=bouquet_id)
-            order=Order.objects.create(
-                customer_name = request.POST['customer_name'],
-                phonenumber = request.POST['phonenumber'],
-                address = request.POST['address'],
-                time = request.POST['time'],
-                cost = bouquet.price,
-                bouquet = bouquet                  
+            order = Order.objects.create(
+                customer_name=request.POST['customer_name'],
+                phonenumber=request.POST['phonenumber'],
+                address=request.POST['address'],
+                time=request.POST['time'],
+                cost=bouquet.price,
+                bouquet=bouquet
             )
             return HttpResponseRedirect(reverse('Flower:order-step', args=[order.id]))
     else:
@@ -157,5 +180,5 @@ def view_order_step(request, order_id):
     }, uuid.uuid4())
 
     url = json.loads(payment.json())['confirmation']['confirmation_url']
-        
+
     return redirect(url)
