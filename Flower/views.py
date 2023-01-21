@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect
 from django.urls import reverse
 from .forms import RequestToConsultationForm, OrderForm
 from django.contrib import messages
-from .models import Bouquet, Bouquet_Flower, Order, Occasion
+from .models import Bouquet, Bouquet_Flower, Order, Occasion, Shop
 from django.shortcuts import render, HttpResponseRedirect
 from yookassa import Configuration, Payment
 import uuid
@@ -53,7 +53,7 @@ def view_quiz_step(request):
     request.session['occasion'] = request.GET.get('occasion')
     prices = set(
         f'{(bouquet.price // 1000) * 1000} - {(bouquet.price // 1000 + 1) * 1000} руб.'
-        for bouquet in Bouquet.objects.all()
+        for bouquet in Occasion.objects.get(title=request.GET.get('occasion')).bouquets.all()
     )
     prices.add('Не имеет значения')
     context = {
@@ -73,16 +73,8 @@ def view_result(request):
             bouquet for bouquet
             in bouquets
             if min_price < bouquet.price < max_price
-        ] or [
-            bouquet for bouquet
-            in bouquets
-            if bouquet.price < max_price
-        ] or [
-            bouquet for bouquet
-            in bouquets
-            if min_price < bouquet.price
-        ] or bouquets
-    
+        ]
+    shops = Shop.objects.all()
     context = {
         'bouquets': [
             {
@@ -94,7 +86,8 @@ def view_result(request):
                 'flowers': bouquet.get_flowers()
             }
             for bouquet in bouquets
-        ]
+        ],
+        'shops': shops
     }
     return render(request, 'Flower/result.html', context=context)
 
